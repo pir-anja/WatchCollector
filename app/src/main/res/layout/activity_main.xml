@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentBottom="false"
+    android:background="@color/dark_grey"
+    tools:context=".MainActivity"
+    tools:deviceIds="wear">
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/inner_frame_layout_padding"
+        android:rotationX="0"
+        app:boxedEdges="all">
+
+        <TextView
+            android:id="@+id/header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|center"
+            android:text="@string/header"
+            android:textColor="#009688"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/text_DataX"
+            android:layout_width="100dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center|center_horizontal"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
+            android:text="@string/accelData_x" />
+
+        <TextView
+            android:id="@+id/text_DataY"
+            android:layout_width="100dp"
+            android:layout_height="120dp"
+            android:layout_gravity="center|center_horizontal"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
+            android:text="@string/accelData_y" />
+
+        <TextView
+            android:id="@+id/text_DataZ"
+            android:layout_width="100dp"
+            android:layout_height="90dp"
+            android:layout_gravity="center|center_horizontal"
+            android:paddingTop="30dp"
+            android:paddingBottom="30dp"
+            android:text="@string/accelData_z" />
+
+        <Button
+            android:id="@+id/button_left"
+            android:layout_width="65dp"
+            android:layout_height="35dp"
+            android:layout_gravity="bottom|start"
+            android:includeFontPadding="false"
+            android:text="@string/left_button" />
+
+        <Button
+            android:id="@+id/button_right"
+            android:layout_width="65dp"
+            android:layout_height="35dp"
+            android:layout_gravity="bottom|end"
+            android:includeFontPadding="false"
+            android:text="@string/right_button" />
+
+    </FrameLayout>
+</androidx.wear.widget.BoxInsetLayout>
