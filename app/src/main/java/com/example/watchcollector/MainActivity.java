@@ -83,8 +83,8 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         setAmbientEnabled();
 
         try {
-            //mSocket = IO.socket("http://100.124.115.57:3000");
-            mSocket = IO.socket("http://192.168.178.63:3000");
+            mSocket = IO.socket("http://100.124.115.57:3000"); //HDK
+            //mSocket = IO.socket("http://192.168.178.63:3000"); //Engen
 
         } catch (Exception e) {
             System.out.println("error: " + e);
@@ -153,7 +153,8 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-           values = event.values;
+            values = event.values;
+            long timestamp = event.timestamp;
             float accelX = values[0];
             float accelY = values[1];
             float accelZ = values[2];
@@ -163,7 +164,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
             currentWatchDataZ.setText("z: " + accelZ);
             if (startWatchRecording && recording) {
                 //attemptSend();
-                String msg = event.timestamp + "," + accelX + "," + accelY + "," + accelZ;
+                String msg = timestamp + "," + accelX + "," + accelY + "," + accelZ;
                 attemptSendWatchAccel(msg);
                 //mSocket.emit("watch accel data", msg);
             }
@@ -171,7 +172,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             gyroValues = event.values;
-            float timestamp = event.timestamp;
+            long timestamp = event.timestamp;
             if (recording) {
                 attemptSendWatchGyro(timestamp + "," + gyroValues[0] + "," + gyroValues[1] + "," + gyroValues[2]);
             }
@@ -179,7 +180,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             magneticValues = event.values;
-            float timestamp = event.timestamp;
+            long timestamp = event.timestamp;
             if (recording) {
                 attemptSendWatchMagnetic(timestamp + "," + magneticValues[0] + "," + magneticValues[1] + "," + magneticValues[2]);
             }
