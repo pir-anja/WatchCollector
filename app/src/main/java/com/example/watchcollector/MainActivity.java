@@ -16,6 +16,7 @@ import org.json.JSONObject;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+import io.socket.engineio.client.transports.WebSocket;
 
 public class MainActivity extends WearableActivity implements SensorEventListener {
 
@@ -83,7 +84,10 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         setAmbientEnabled();
 
         try {
-            mSocket = IO.socket("http://100.124.115.57:3000"); //HDK
+            //mSocket = IO.socket("http://100.124.115.57:3000"); //HDK Laptop
+            IO.Options options = IO.Options.builder().setTransports(new String [] {WebSocket.NAME}).build();
+            mSocket = IO.socket("http://100.124.115.36:3000", options); //Hdk Desktop PC
+            //mSocket = IO.socket("http://100.124.115.57:3000", options); //HDK Laptop
             //mSocket = IO.socket("http://192.168.178.63:3000"); //Engen
 
         } catch (Exception e) {
@@ -103,6 +107,13 @@ public class MainActivity extends WearableActivity implements SensorEventListene
             System.out.println("stop recording");
             recording = false;
         });
+
+        mSocket.on("disconnect", (s) -> {
+            mSocket.emit("ciao", s);
+            mSocket.connect();
+
+        });
+
         mSocket.on("connect", (s) -> finallyConnected());
         mSocket.connect();
 
