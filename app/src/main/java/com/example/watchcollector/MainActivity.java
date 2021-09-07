@@ -30,7 +30,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
     //GUI
     private TextView header;
-    private TextView currentWatchDataX, currentWatchDataY, currentWatchDataZ;
+    //private TextView currentWatchDataX, currentWatchDataY, currentWatchDataZ;
     private Button leftButton;
     private Button rightButton;
 
@@ -86,7 +86,8 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         try {
             //mSocket = IO.socket("http://100.124.115.57:3000"); //HDK Laptop
             IO.Options options = IO.Options.builder().setTransports(new String [] {WebSocket.NAME}).build();
-            mSocket = IO.socket("http://100.124.115.36:3000", options); //Hdk Desktop PC
+            //mSocket = IO.socket("http://100.124.115.36:3000", options); //Hdk Desktop PC
+            mSocket = IO.socket("http://10.12.180.224:3000", options); //TECO
             //mSocket = IO.socket("http://100.124.115.57:3000", options); //HDK Laptop
             //mSocket = IO.socket("http://192.168.178.63:3000"); //Engen
 
@@ -151,9 +152,9 @@ public class MainActivity extends WearableActivity implements SensorEventListene
 
     private void initializeViews() {
         header = (TextView) findViewById(R.id.header);
-        currentWatchDataX = (TextView) findViewById(R.id.text_DataX);
+        /*currentWatchDataX = (TextView) findViewById(R.id.text_DataX);
         currentWatchDataY = (TextView) findViewById(R.id.text_DataY);
-        currentWatchDataZ = (TextView) findViewById(R.id.text_DataZ);
+        currentWatchDataZ = (TextView) findViewById(R.id.text_DataZ);*/
 
         leftButton = (Button) findViewById(R.id.button_left);
         rightButton = (Button) findViewById(R.id.button_right);
@@ -170,9 +171,9 @@ public class MainActivity extends WearableActivity implements SensorEventListene
             float accelY = values[1];
             float accelZ = values[2];
 
-            currentWatchDataX.setText("x: " + accelX);
+            /*currentWatchDataX.setText("x: " + accelX);
             currentWatchDataY.setText("y: " + accelY);
-            currentWatchDataZ.setText("z: " + accelZ);
+            currentWatchDataZ.setText("z: " + accelZ);*/
             if (startWatchRecording && recording) {
                 //attemptSend();
                 String msg = timestamp + "," + accelX + "," + accelY + "," + accelZ;
