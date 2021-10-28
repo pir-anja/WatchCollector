@@ -118,7 +118,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         mSocket.on("connect", (s) -> finallyConnected());
         mSocket.connect();
 
-        // choose the body side of the pocket the phone is placed in
+        // choose the body side, on which wrist the watch is placed
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -1,6 +1,6 @@
 package com.example.watchcollector;
 
-// on which body side pocket the phone is placed in
+//choose the body side, on which wrist the watch is placed
 public enum bodySide {
     LEFT, RIGHT, NON_DEFINED;
 }
