@@ -1,3 +1,4 @@
+/*Wear OS application that collects accelerometer, gyroscope and magnetometer data from the inertial measurement unit from a smartwatch and sends it to a server via WebSocket*/
 package com.example.watchcollector;
 
 import android.graphics.Color;
@@ -11,8 +12,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+
+import com.example.watchcollector.bodySide;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -49,12 +54,11 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-
         initializeViews();
 
-        //init sensor
+        // init sensors
+        // accelerometer
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             // watch accelerometer exists
@@ -63,39 +67,36 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         } else {
             System.out.println("No watch accelerometer"); // no watch accelerometer available
         }
-
+        // gyroscope
         if (sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null) {
-            // phone accelerometer exists
+            // phone gyroscope exists
             gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
             sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
-            System.out.println("No watch gyroscope"); // no phone accelerometer available
+            System.out.println("No watch gyroscope"); // no watch gyroscope available
         }
-
+        // magnetometer
         if (sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD) != null) {
-            // phone accelerometer exists
+            // watch magnetometer exists
             magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
             sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_FASTEST);
         } else {
-            System.out.println("No watch magnetometer"); // no phone accelerometer available
+            System.out.println("No watch magnetometer"); // no watch magnetometer available
         }
 
-        // Enables Always-on
+        // Enable display always-on
         setAmbientEnabled();
 
         try {
-            //mSocket = IO.socket("http://100.124.115.57:3000"); //HDK Laptop
-            IO.Options options = IO.Options.builder().setTransports(new String [] {WebSocket.NAME}).build();
-            //mSocket = IO.socket("http://100.124.115.36:3000", options); //Hdk Desktop PC
-            mSocket = IO.socket("http://10.12.180.224:3000", options); //TECO
-            //mSocket = IO.socket("http://100.124.115.57:3000", options); //HDK Laptop
-            //mSocket = IO.socket("http://192.168.178.63:3000"); //Engen
+            IO.Options options = IO.Options.builder().setTransports(new String[]{WebSocket.NAME}).build();
+            // IP address of server must be configured!
+            mSocket = IO.socket("http://192.168.178.63:3000"); // IP address Engen
 
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
 
-        mSocket.on("connect_error",(s) -> {
+        mSocket.on("connect_error", (s) -> {
             System.out.println("connect_error" + s);
         });
 
@@ -112,16 +113,15 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         mSocket.on("disconnect", (s) -> {
             mSocket.emit("ciao", s);
             mSocket.connect();
-
         });
 
         mSocket.on("connect", (s) -> finallyConnected());
         mSocket.connect();
 
+        // choose the body side of the pocket the phone is placed in
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 side = bodySide.LEFT;
                 sideString = side.toString().toLowerCase();
                 leftButton.setEnabled(false);
@@ -132,8 +132,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         });
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 side = bodySide.RIGHT;
                 sideString = side.toString().toLowerCase();
                 leftButton.setEnabled(false);
@@ -160,11 +159,11 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         rightButton = (Button) findViewById(R.id.button_right);
     }
 
-    //Called when there is a new watch sensor event (e.g. every time when watch accelerometer data has changed)
+    // called when there is a new watch sensor event (e.g. every time when watch accelerometer data has changed)
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // accelerometer sensor event
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-
             values = event.values;
             long timestamp = event.timestamp;
             float accelX = values[0];
@@ -175,13 +174,11 @@ public class MainActivity extends WearableActivity implements SensorEventListene
             currentWatchDataY.setText("y: " + accelY);
             currentWatchDataZ.setText("z: " + accelZ);*/
             if (startWatchRecording && recording) {
-                //attemptSend();
                 String msg = timestamp + "," + accelX + "," + accelY + "," + accelZ;
                 attemptSendWatchAccel(msg);
-                //mSocket.emit("watch accel data", msg);
             }
         }
-
+        // gyroscope sensor event
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             gyroValues = event.values;
             long timestamp = event.timestamp;
@@ -189,7 +186,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
                 attemptSendWatchGyro(timestamp + "," + gyroValues[0] + "," + gyroValues[1] + "," + gyroValues[2]);
             }
         }
-
+        // magnetometer sensor event
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             magneticValues = event.values;
             long timestamp = event.timestamp;
@@ -199,6 +196,7 @@ public class MainActivity extends WearableActivity implements SensorEventListene
         }
     }
 
+    // methods for sending sensor data to server via WebSocket
     private void attemptSendWatchAccel(String msg) {
         mSocket.emit("watch accel data " + sideString, msg);
     }
@@ -210,7 +208,6 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     private void attemptSendWatchMagnetic(String msg) {
         mSocket.emit("watch magnetic data " + sideString, msg);
     }
-
 
 
     @Override
@@ -244,7 +241,6 @@ public class MainActivity extends WearableActivity implements SensorEventListene
     @Override
     public void onDestroy() {
         super.onDestroy();
-
         mSocket.disconnect();
         mSocket.off("new message", onNewMessage);
     }
